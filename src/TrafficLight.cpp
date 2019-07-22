@@ -68,18 +68,21 @@ void TrafficLight::cycleThroughPhases()
     // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
 	std::chrono::time_point<std::chrono::system_clock> lastUpdate;
 	lastUpdate = std::chrono::system_clock::now();
+	int random = rand() % 3 + 4;
 	while (true) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
-		if (timeSinceLastUpdate >= 4) {
+		if (timeSinceLastUpdate >= random) {
 			std::lock_guard<std::mutex> lck(_mutex);
 			if (_currentPhase == TrafficLightPhase::red) {
 				msg_queue.send(std::move(TrafficLightPhase::green));
 				_currentPhase = TrafficLightPhase::green;
+				random = rand() % 3 + 4;
 			}
 			else {
 				msg_queue.send(std::move(TrafficLightPhase::red));
 				_currentPhase = TrafficLightPhase::red;
+				random = rand() % 3 + 4;
 			}
 
 			lastUpdate = std::chrono::system_clock::now();
